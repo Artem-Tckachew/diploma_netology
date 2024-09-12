@@ -82,7 +82,7 @@ Cоздайте ВМ, разверните на ней Elasticsearch. Устан
 
 ---------
 
-Terraform
+## Terraform
 
 ---------
 
