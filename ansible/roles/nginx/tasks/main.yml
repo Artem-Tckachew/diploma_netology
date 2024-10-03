@@ -1,0 +1,23 @@
+---
+# tasks file for nginx
+- name: Установка Nginx
+  apt:
+    name: nginx
+    state: latest
+    update_cache: yes
+    
+- name: Запуск Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+    
+- name: Создание HTML-странички
+  copy:
+    content: "<html><head><title>Diploma Tkachev AA</title></head><body><h1>Diploma Tkachev AA</h1></body></html>"
+    dest: /var/www/html/index.html
+    owner: www-data
+    group: www-data
+
+  notify:
+    - Restart Nginx

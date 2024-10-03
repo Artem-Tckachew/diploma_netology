@@ -123,19 +123,19 @@ provider "yandex" {
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/5.png)
 
-### SG_zabbix с открытым портом 80 и 10051 для доступа с интернета к Fronted Zabbix и работы Zabbix agent
+### SG_zabbix с открытым портом 8080 и 10051 для доступа с интернета к Fronted Zabbix и работы Zabbix agent
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/9.png)
 
-### SG_kibana c открытым портом 5601 для доступа c интернета к Fronted Kibana
+### SG_kibana c открытым портом 5601 для доступа c интернета к Fronted Kibana и портом 10050 для работы Zabbix_agent
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/8.png)
 
-### SG_bastion c с открытием только 22 порта для работы SSH
+### SG_bastion c открытием только 22 порта для работы SSH
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/7.png)
 
-### SG_internal с разрешением любого трафика между ВМ кому присвоена данная SG
+### SG security-ssh-traffic с открытием только 22 порта для развертывания инфраструктуры с удаленной машины
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/6.png)
 
@@ -173,7 +173,69 @@ provider "yandex" {
 
 ![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/15.png)
 
+проверяем на следующий день, что снимки создались по расписанию
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/16.png)
+
 ---
 
+## Ansible
 
+--
 
+Установка и настройка ansible
+устанавливаем ansible на локальном хосте где работали с terraform и настраиваем его на работу через bastion
+
+файл конфигурации
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/17.png)
+
+файл inventory
+
+создаем файл hosts.ini c использованием FQDN имен серверов вместо ip
+(т.к. DNS имя для ВМ bastion не регистрировалось глобально, то я просто использовал iр для доступа из интернета)
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/18.png)
+
+проверяем доступность ВМ используя модуль ping
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/19.png)
+
+Я разбил Ansible на роли и запускал один плейбук сразу на установку всех ролей.
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/20.png)
+
+проверяем доступность сайта в браузере по публичному ip адресу Load Balancer
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/21.png)
+
+делаем запрос curl -v 51.250.35.210:80
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/22.png)
+
+проверяем работу Load Balancer в web консоли YC
+
+видим что меняется ip backend, значит балансировщик работает.
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/23.png)
+
+Мониторинг
+проверяем доступность frontend zabbix сервера, ставим хосты на мониторинг, настраиваем дашборды.
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/24.png)
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/25.png)
+
+Логи
+
+проверяем, что Kibana работает
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/26.png)
+
+Также проверяем, что верно настроена связка filebeat-elastic-kibana и логи видны на вебинтерфейсе kibana
+
+![alt text](https://github.com/Artem-Tckachew/diploma_netology/blob/main/src/27.png)
+
+Инфраструктура готова к эксплуатации.
+
+---

@@ -1,0 +1,43 @@
+---
+- name: copy key file
+  copy:
+    src=/home/artem/ansible/GPG-KEY-elasticsearch
+    dest=/tmp
+
+- name: add elastik apt key
+  ansible.builtin.apt_key:
+    file: /tmp/GPG-KEY-elasticsearch
+    state: present
+
+- name: install elastic repository
+  ansible.builtin.apt_repository:
+    repo: deb https://mirror.yandex.ru/mirrors/elastic/8/ stable main
+    state: present
+
+- name: update cache repository
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: install filebeat
+  ansible.builtin.apt:
+    name: filebeat
+    state: present
+
+- name: enter elastic password in confiig file filebeat
+  ansible.builtin.pause:
+    prompt: "Open file ./filebeat_conf/filebeat.yml and insert password"
+
+- name: copy conf file
+  copy: 
+    src: /home/artem/ansible/roles/filebeat/templates/filebeat.yml 
+    dest: /etc/filebeat/filebeat.yml 
+    mode: 0644
+    owner: root
+    group: root
+
+- name: enable and restart filebeat
+  systemd:
+    name: filebeat
+    enabled: true
+    daemon_reload: true
+    state: restarted
