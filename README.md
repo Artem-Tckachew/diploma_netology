@@ -238,4 +238,9 @@ provider "yandex" {
 
 Инфраструктура готова к эксплуатации.
 
+web интерфейс Zabbix http://84.201.181.214:8080 логин\пароль Admin\zabbix
+web интерфейс kibana http://158.160.12.114:5601 логин\пароль elastic\VBh2HgJiNXgO7hokSsS-
+
+
+
 ---
