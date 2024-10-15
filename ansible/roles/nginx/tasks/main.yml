@@ -18,6 +18,3 @@
     dest: /var/www/html/index.html
     owner: www-data
     group: www-data
-
-  notify:
-    - Restart Nginx

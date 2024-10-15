@@ -25,6 +25,15 @@
       - zabbix-agent
     state: present  
 
+- name: copy nginx configuration
+  ansible.builtin.copy:
+    src: ./templates/nginx.conf
+    dest: /etc/zabbix/nginx.conf
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes 
+
 - name: Install Mysql
   ansible.builtin.apt:
     name:
@@ -64,18 +73,17 @@
     state: import
     target: /usr/share/zabbix-sql-scripts/mysql/server.sql
 
-
 - name: setting zabbix db
   ansible.builtin.lineinfile:
     path: /etc/zabbix/zabbix_server.conf
     insertafter: "DBPassword="
     line: DBPassword=zabbix
 
-- name: setting port
-  shell: sed -i 's/#        listen          8080;/        listen          8080;/g' /etc/zabbix/nginx.conf
+#- name: setting port
+#  shell: sed -i 's/#        listen          8080;/        listen          8080;/g' /etc/zabbix/nginx.conf
 
-- name: setting address
-  shell: sed -i 's/#        server_name     example.com;;/        server_name     zabbix.example.com;/g' /etc/zabbix/nginx.conf
+#- name: setting address
+#  shell: sed -i 's/#        server_name     example.com;;/        server_name     zabbix.example.com;/g' /etc/zabbix/nginx.conf
 
 - name: enable and restart zabbix
   systemd:

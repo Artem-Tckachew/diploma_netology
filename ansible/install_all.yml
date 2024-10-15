@@ -1,28 +1,35 @@
 ---
-- name: Установка Elastic
-  become: true
-  hosts: elasticserv
-  roles:
-    - elasticsearch
+#- name: Установка Elastic
+#  become: true
+#  hosts: elasticserv
+#  roles:
+#    - elasticsearch
 
-- name: "Install Kibana"
-  become: true
-  hosts: kibanaserv
-  roles:
-    - kibana
+#- name: "Install Kibana"
+#  become: true
+#  hosts: kibanaserv
+#  vars:
+#    elastic_httphost: elasticserv:9200
+#  roles:
+#    - kibana
 
-- name: "Install Nginx, filebeat"
-  hosts: web
-  become: true
-  roles:
-    - nginx
-    - filebeat
+#- name: "Install Nginx, filebeat"
+#  hosts: web
+#  vars:
+#    kibana_host: kibanaserv:5601
+#    elastic_host: elasticserv:9200
+#  become: true
+#  roles:
+#    - nginx
+#    - filebeat
 
-- name: "zabbix_agent"
-  become: true
-  hosts: web, log
-  roles:
-    - zabbix_agent  
+#- name: "zabbix_agent"
+#  become: true
+#  hosts: web, log
+#  vars:
+#    zabbix_server: zabbixserv
+#  roles:
+#    - zabbix_agent  
 
 - name: "install zabbix server"
   become: true

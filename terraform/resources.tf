@@ -17,20 +17,17 @@ resource "yandex_compute_instance" "webserv-1" {
     }
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.subnet_webserv-1.id
-	dns_record {
-      fqdn = "web1.srv."
-    ttl = 300
-    }
-    security_group_ids = [yandex_vpc_security_group.internal.id]
-    ip_address         = "10.10.1.3"
+    subnet_id = yandex_vpc_subnet.subnet-1.id
+    nat       = false
+    ip_address = "192.168.1.11"
+    security_group_ids = [yandex_vpc_security_group.security-ssh-traffic.id, yandex_vpc_security_group.nginx-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }
@@ -40,7 +37,7 @@ resource "yandex_compute_instance" "webserv-2" {
   hostname                  = "webserv-2"
   zone                      = var.zone_b
   allow_stopping_for_update = true
-  platform_id               = "standard-v3" 
+  platform_id               = "standard-v3"
 
   resources {
     cores  = 2
@@ -51,22 +48,19 @@ resource "yandex_compute_instance" "webserv-2" {
   boot_disk {
     disk_id     = "${yandex_compute_disk.disk-webserv-2.id}"
     }
-    
+
   network_interface {
-    subnet_id          = yandex_vpc_subnet.subnet_webserv-2.id
-	dns_record {
-      fqdn = "web2.srv."
-    ttl = 300
-    }
-    security_group_ids = [yandex_vpc_security_group.internal.id]
-    ip_address         = "10.10.2.3"
+    subnet_id = yandex_vpc_subnet.subnet-2.id
+    nat       = false
+    ip_address = "192.168.2.22"
+    security_group_ids = [yandex_vpc_security_group.security-ssh-traffic.id, yandex_vpc_security_group.nginx-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }
@@ -75,9 +69,8 @@ resource "yandex_compute_instance" "webserv-2" {
 resource "yandex_compute_instance" "bastionserv" {
   name                      = "bastionserv"
   hostname                  = "bastionserv"
-  zone                      = var.zone_b 
-  allow_stopping_for_update = true
-  platform_id               = "standard-v3" 
+  zone                      = var.zone_d
+  platform_id               = "standard-v3"
 
   resources {
     cores  = 2
@@ -90,21 +83,17 @@ resource "yandex_compute_instance" "bastionserv" {
     }
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.public.id
-	dns_record {
-      fqdn = "bastion.srv."
-    ttl = 300
-    }
-    nat                = true
-    security_group_ids = [yandex_vpc_security_group.internal.id, yandex_vpc_security_group.public-bastion.id]
-    ip_address         = "10.10.4.4"
+    subnet_id = yandex_vpc_subnet.subnet-4.id
+    nat       = true
+    ip_address = "192.168.4.55"
+    security_group_ids = [yandex_vpc_security_group.bastion-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }
@@ -114,7 +103,7 @@ resource "yandex_compute_instance" "bastionserv" {
 resource "yandex_compute_instance" "zabbixserv" {
   name                      = "zabbixserv"
   hostname                  = "zabbixserv"
-  zone                      = var.zone_b
+  zone                      = var.zone_d
   allow_stopping_for_update = true
   platform_id               = "standard-v3"
 
@@ -129,21 +118,17 @@ resource "yandex_compute_instance" "zabbixserv" {
     }
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.public.id
-	dns_record {
-      fqdn = "zabbix.srv."
-    ttl = 300
-    }
-    nat                = true
-    security_group_ids = [yandex_vpc_security_group.internal.id, yandex_vpc_security_group.public-zabbix.id]
-    ip_address         = "10.10.4.5"
+    subnet_id = yandex_vpc_subnet.subnet-4.id
+    nat       = true
+    ip_address = "192.168.4.33"
+    security_group_ids = [yandex_vpc_security_group.security-ssh-traffic.id, yandex_vpc_security_group.zabbix-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }
@@ -152,7 +137,7 @@ resource "yandex_compute_instance" "zabbixserv" {
 resource "yandex_compute_instance" "elasticserv" {
   name                      = "elasticserv"
   hostname                  = "elasticserv"
-  zone                      = var.zone_b
+  zone                      = var.zone_d
   allow_stopping_for_update = true
   platform_id               = "standard-v3"
 
@@ -167,20 +152,17 @@ resource "yandex_compute_instance" "elasticserv" {
     }
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.private.id
-	dns_record {
-      fqdn = "elastic.srv."
-    ttl = 300
-    }
-    security_group_ids = [yandex_vpc_security_group.internal.id]
-    ip_address         = "10.10.3.4"
+    subnet_id = yandex_vpc_subnet.subnet-4.id
+    nat       = false
+    ip_address = "192.168.4.44"
+    security_group_ids = [yandex_vpc_security_group.security-ssh-traffic.id, yandex_vpc_security_group.elastic-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }
@@ -204,21 +186,17 @@ resource "yandex_compute_instance" "kibanaserv" {
     }
 
   network_interface {
-    subnet_id          = yandex_vpc_subnet.public.id
-	dns_record {
-      fqdn = "kibana.srv."
-    ttl = 300
-    }
-    nat                = true
-    security_group_ids = [yandex_vpc_security_group.internal.id, yandex_vpc_security_group.public-kibana.id]
-    ip_address         = "10.10.4.3"
+    subnet_id = yandex_vpc_subnet.subnet-2.id
+    nat       = true
+    ip_address = "192.168.2.32"
+    security_group_ids = [yandex_vpc_security_group.security-ssh-traffic.id, yandex_vpc_security_group.kibana-sg.id]
   }
 
   metadata = {
-    user-data = "${file("./meta.txt")}"
+    user-data = "${file("./meta.yaml")}"
   }
 
-  scheduling_policy {  
+  scheduling_policy {
     preemptible = true
   }
 }

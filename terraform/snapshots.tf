@@ -1,7 +1,7 @@
 resource "yandex_compute_snapshot_schedule" "default1" {
   name = "default1"
   description    = "Ежедневные снимки, хранятся 7 дней"
- 
+
     schedule_policy {
     expression = "0 1 * * *"
   }
@@ -14,12 +14,12 @@ resource "yandex_compute_snapshot_schedule" "default1" {
   }
 
   disk_ids = [
-    "${yandex_compute_disk.disk-webserv-1.id}",
-    "${yandex_compute_disk.disk-webserv-2.id}",
-    "${yandex_compute_disk.disk-bastionserv.id}",
-    "${yandex_compute_disk.disk-zabbixserv.id}",
-    "${yandex_compute_disk.disk-elasticserv.id}",
-    "${yandex_compute_disk.disk-kibanaserv.id}",
+    yandex_compute_disk.disk-webserv-1.id,
+    yandex_compute_disk.disk-webserv-2.id,
+    yandex_compute_disk.disk-bastionserv.id,
+    yandex_compute_disk.disk-zabbixserv.id,
+    yandex_compute_disk.disk-elasticserv.id,
+    yandex_compute_disk.disk-kibanaserv.id,
   ]
 
   depends_on = [

@@ -1,36 +1,12 @@
 ---
-- name: copy key file
-  copy:
-    src=/home/artem/ansible/GPG-KEY-elasticsearch
-    dest=/tmp
+- name: Установка пакета kibana
+  apt:
+    deb: "https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.15.1-amd64.deb"
 
-- name: add elastik apt key
-  ansible.builtin.apt_key:
-    file: /tmp/GPG-KEY-elasticsearch
-    state: present
-
-- name: install elastic repository
-  ansible.builtin.apt_repository:
-    repo: deb https://mirror.yandex.ru/mirrors/elastic/8/ stable main
-    state: present
-
-- name: update cache repository
-  ansible.builtin.apt:
-    update_cache: yes
-
-- name: install packages
-  ansible.builtin.apt:
-    name:
-      - apt-transport-https
-      - openjdk-8-jre-headless
-      - kibana
-    state: present
-      
-- name: setting kibana
-  ansible.builtin.lineinfile:
-    path: /etc/kibana/kibana.yml
-    regexp: '^#server.host: "localhost"'
-    line: "server.host: 0.0.0.0"
+- name: Копируем конфигурационный файл kibana
+  template:
+    src: ./templates/kibana.j2
+    dest: /etc/kibana/kibana.yml
 
 - name: enable and restart kibana
   ansible.builtin.systemd:
@@ -39,14 +15,3 @@
     daemon_reload: true
     masked: no
     state: started
-
-- name: connect kibana <-> elastic
-  ansible.builtin.pause:
-    prompt: "Open kibana web and insert token."
-
-- name: save veryfication code
-  ansible.builtin.shell: /usr/share/kibana/bin/kibana-verification-code
-  register: ctlcode_result
-
-- name: Debug registered var
-  debug: var=ctlcode_result.stdout_lines
